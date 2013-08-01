@@ -29,8 +29,8 @@ Relationships
 ```PHP
   class Post_model extends MY_Model
   {
-  	public $belongs_to = array('author');
-  	public $has_many = array('comments');
+     public $belongs_to = array('author');
+     public $has_many = array('comments');
   }
 ```
 
@@ -45,8 +45,8 @@ Relationships
 ```PHP
   class Post_model extends MY_Model
   {
-  	public $belongs_to = array('author' => array('model' => 'author_m'));
-  	public $has_many = array('comments' => array('model' => 'model_comments'));
+  	 public $belongs_to = array('author' => array('model' => 'author_m'));
+  	 public $has_many = array('comments' => array('model' => 'model_comments'));
   }
 ```
 
@@ -67,9 +67,7 @@ Arrays vs Objects
 -----------------
 - By default, MY_Model is setup to return objects using CodeIgniter's QB's row() and result() methods. 
   If you'd like your calls to use the array methods, you can set the $return_type variable to array.
-```PHP
-  this->return_type('array');
-```
+```PHP $this->return_type('array'); ```
 
 Soft Delete
 -----------
@@ -79,7 +77,7 @@ Soft Delete
 - If you enable soft deleting, the deleted row will be marked as deleted rather than actually 
   being removed from the database.
 
-- We can enable soft delete by setting the $this->soft_delete key:
+- We can enable soft delete by setting the ```PHP $this->soft_delete``` key:
 ```PHP
   $this->soft_delete(true);
 ```
@@ -102,7 +100,7 @@ Database Connection
 - The class will automatically use the default database connection, and even load it for you if you haven't yet.
 
 - You can specify a database connection on a per-model basis with the db_group method. 
-  This is equivalent to calling ```PHP$this->db->database($this->db_group, TRUE).```
+  This is equivalent to calling ```PHP $this->db->database($this->db_group, TRUE)```
 ```PHP
   $this->db_group('group_name');
 ```
