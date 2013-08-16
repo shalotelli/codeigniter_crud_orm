@@ -257,10 +257,10 @@ class MY_Model extends CI_Model {
 	/**
 	 * Select data from table
 	 * 
-	 * @param  array   $where Associative array of data
+	 * @param  string|array   $where String or array of data
 	 * @return object         Returned rows
 	 */
-	public function get($where=array())
+	public function get($where=null)
 	{
 		// if soft deleting, look for non-deleted rows
 		if($this->soft_delete) {
@@ -284,7 +284,7 @@ class MY_Model extends CI_Model {
 			$this->with = array();
 		}
 
-		return $result;
+		return (! empty($result)) ? $result : false;
 	}
 
 	/**
@@ -302,6 +302,7 @@ class MY_Model extends CI_Model {
 
 		// get result
 		$row = $this->database->where($this->primary_key, $id)
+							  ->limit(1)
 							  ->get($this->table)
 							  ->{$this->_return_type()}();
 
@@ -347,7 +348,9 @@ class MY_Model extends CI_Model {
 			}
 		}
 
-		return $this->database->where($this->primary_key, $id)->update($this->table);
+		$this->database->where($this->primary_key, $id)->update($this->table);
+
+		return (bool) ($this->database->affected_rows() > 0);
 	}
 
 	/**
@@ -359,9 +362,11 @@ class MY_Model extends CI_Model {
 	 */
 	public function batch_update($ids, $data)
 	{
-		return $this->database->where_in($this->primary_key, $ids)
-							  ->set($data)
-							  ->update($this->table);
+		$this->database->where_in($this->primary_key, $ids)
+					   ->set($data)
+					   ->update($this->table);
+
+		return (bool) ($this->database->affected_rows() > 0);
 	}
 
 	/**
@@ -375,7 +380,9 @@ class MY_Model extends CI_Model {
 		$data = array_pop($args);
 		$this->_set_where($args);
 
-		return $this->database->set($data)->update($this->table);
+		$this->database->set($data)->update($this->table);
+
+		return (bool) ($this->database->affected_rows() > 0);
 	}
 
 	/**
@@ -386,7 +393,9 @@ class MY_Model extends CI_Model {
 	 */
 	public function update_all($data)
 	{
-		return $this->database->set($data)->update($this->table);
+		$this->database->set($data)->update($this->table);
+
+		return (bool) ($this->database->affected_rows() > 0);
 	}
 
 	/**
@@ -845,9 +854,13 @@ class MY_Model extends CI_Model {
 	private function _set_where($where) {
 		if(! empty($where)) {
 			if(count($where)==1) {
-				$this->database->where($where[0]);
-			} else {
+				$this->database->where($where);
+			} else if(count($where)==2) {
 				$this->database->where($where[0], $where[1]);
+			} else if(count($where)==3) {
+				$this->database->where($where[0], $where[1], $where[2]);
+			} else {
+				$this->database->where($where);
 			}
 		}
 	}
